@@ -1,10 +1,20 @@
 package com.example.neartweetclient;
 
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -15,7 +25,10 @@ public class MainActivity extends Activity {
     private Button button;
     private String message;
     private EditText textField;
-    DataInputStream din;
+   
+
+ 
+ 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -23,20 +36,26 @@ public class MainActivity extends Activity {
 		
 		  button = (Button) findViewById(R.id.login);
 		  textField = (EditText) findViewById(R.id.user);
-		 
-          //Button press event listener
+		          //Button press event listener
           button.setOnClickListener(new View.OnClickListener() {
                   public void onClick(View v) {
                           message = textField.getText().toString();
-                          textField.setText("");
-                         new ClientConnectorTask().execute(message);
+ 
+						try {
+						new ClientConnectorTask1().execute("@Login-"+message);
+                        Intent activityIntent = new Intent(MainActivity.this, TweetMenu.class);
+	                    Bundle newActivityInfo = new Bundle();
+	                    newActivityInfo.putString("username", message);// putDouble, putString, etc.
+	                    activityIntent.putExtras(newActivityInfo);
+	                    
+	                    startActivity(activityIntent);
+	                    
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+                  }  
                          
-                         Intent activityIntent = new Intent(MainActivity.this, TweetMenu.class);
-                         Bundle newActivityInfo = new Bundle();
-                         newActivityInfo.putString("username", message);// putDouble, putString, etc.
-                         activityIntent.putExtras(newActivityInfo);
-                         startActivity(activityIntent);
-                  }
           });
         
         
@@ -50,5 +69,35 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+	
+	class ClientConnectorTask1 extends AsyncTask<String, Void, Integer> {
+		
+	    
+	    private PrintWriter printwriter;
+	    Socket  client;
 
+
+	    protected Integer doInBackground(String...strings) {
+	     // connect to the server and send the message
+	            try {
+	            	
+	            		client = new Socket("194.210.230.95", 4444);
+	                    printwriter = new PrintWriter(client.getOutputStream(),true);
+	                    printwriter.write(strings[0]);
+	                    printwriter.flush();
+	                    printwriter.close();
+	                    client.close();
+	                    
+	            } catch (UnknownHostException e) {
+	                    e.printStackTrace();
+	            } catch (IOException e) {
+	                    e.printStackTrace();
+	            }
+	            return 0;
+	    }
+
+	    protected void onPostExecute(Long result) {
+	            return;
+	    }
+	}
 }

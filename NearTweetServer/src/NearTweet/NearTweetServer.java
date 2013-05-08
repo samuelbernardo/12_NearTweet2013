@@ -56,11 +56,11 @@ public class NearTweetServer {
 				int size=Clients.size();
 				System.out.println("Clients size="+size);
 				for(int i=0; i<size;i++){
-				Client a = Clients.elementAt(i);
+				Client a = Clients.remove(i);
 				System.out.println("Clients="+a.Username);
-				a.tweets.add(s[2]);
-				a.history.add("yes");
-				a.actualizar="yes";
+				a.setNewTweet(s[2]);
+				Clients.add(a);
+				
 				
 					
 				}
@@ -82,7 +82,7 @@ public class NearTweetServer {
 				System.exit(-1);
 			}
 			
-			Client c = Clients.elementAt(aux);
+			Client c = Clients.remove(aux);
 			if(c.refresh().equals("yes")){
 				String tweetmsg = c.getNewTweet();
 				System.out.println("Envia Tweet:"+tweetmsg+".\n");
@@ -90,7 +90,7 @@ public class NearTweetServer {
 				dout.println(tweetmsg);
 				
 				if(dout.checkError())System.out.println("Stream error!\n");
-		
+				
 			}else{
 				dout.write("no tweet!");
 				dout.flush();
@@ -100,6 +100,7 @@ public class NearTweetServer {
 			
 				}
 			dout.close();
+			Clients.add(c);
 			}
 			socC.close();
 			message="";

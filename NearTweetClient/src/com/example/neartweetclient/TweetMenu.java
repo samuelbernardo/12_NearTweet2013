@@ -2,30 +2,31 @@ package com.example.neartweetclient;
 
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutionException;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -34,14 +35,17 @@ public class TweetMenu extends Activity implements OnTouchListener{
 	
 	 float downXValue;
 	 private Button button;
+	 private Button buttonFacebook;
 	 private long leituras=0;	 
 	 private String message="no";
 	 private InputStreamReader in;
 	 private BufferedReader buf;
 	 private Timer time;
-	 String mensagem = "null";
+	 private String mensagem = "null";
 	 private Date data = new Date();
-	 
+	 private ArrayList<String> tweetsList = new ArrayList<String>();
+	 private ListView mainListView;
+	 private ArrayAdapter<String> listAdapter ;
 
 	 
 
@@ -58,18 +62,18 @@ public class TweetMenu extends Activity implements OnTouchListener{
 		LinearLayout layMain = (LinearLayout) findViewById(R.id.layout_main);
         layMain.setOnTouchListener((OnTouchListener) this); 
 		TextView et = (TextView) findViewById(R.id.usermenu);
-		TextView et1 = (TextView) findViewById(R.id.usermenu1);
 		TextView tweet = (TextView) findViewById(R.id.tweet);	
 		button = (Button) findViewById(R.id.button1);
+		buttonFacebook = (Button) findViewById(R.id.facebook);
 		Intent intent = getIntent();
 		time= new Timer();
 		String username = intent.getStringExtra("username");
-		
+		mainListView = (ListView) findViewById( R.id.listview );    
 		et.setText(username);
-		et1.setText(username);
-		//tweet.setText("TWEET");
-		
-		
+	//	rowTextView
+		listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow, tweetsList); 
+		mainListView.setAdapter( listAdapter );
+		mainListView.setOnTouchListener((OnTouchListener) this);
 		//Temporizador para actualizar o cliente
 			time.schedule(new TimerTask() {
 				TextView tweet = (TextView) findViewById(R.id.tweet);	
@@ -80,9 +84,11 @@ public class TweetMenu extends Activity implements OnTouchListener{
 				new ClientReceiverTask1().execute(et, tweet);
 			
 				//guardar data e tweet num array
-				int day =data.getDay();
-				//mensagem -> novo tweet;
-			
+			//int day =data.getDay();
+				if(!(mensagem.equals("null") || mensagem.equals("no tweet!"))){
+				tweetsList.add(mensagem); 
+				mensagem="null";
+				}
 				}}, 5000,5000);
 			
 		
@@ -99,9 +105,30 @@ public class TweetMenu extends Activity implements OnTouchListener{
             
 			}
         });
+	
+	
+	
+		// botao responsavel para enviar tweet para servidor
+      buttonFacebook.setOnClickListener(new View.OnClickListener() {
+          public void onClick(View v) {
+        	  Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        	  shareIntent.setType("text/plain");
+        	  shareIntent.putExtra(Intent.EXTRA_TEXT, "URLyouWantToShare");
+        	  startActivity(Intent.createChooser(shareIntent, "Share..."));
+			}
+      });
+	
+	}
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)
+	{
+	    if ((keyCode == KeyEvent.KEYCODE_BACK))
+	    {
+	        finish();
+	    }
+	    return super.onKeyDown(keyCode, event);
 	}
 	
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -168,7 +195,7 @@ class ClientConnectorTask1 extends AsyncTask<String, Void, Integer> {
      // connect to the server and send the message
             try {
             	
-            		client = new Socket("194.210.230.95", 4444);
+            		client = new Socket("192.168.1.3", 4444);
                     printwriter = new PrintWriter(client.getOutputStream(),true);
                     printwriter.write(strings[0]);
                     printwriter.flush();
@@ -189,7 +216,7 @@ class ClientConnectorTask1 extends AsyncTask<String, Void, Integer> {
 }
 
  class ClientReceiverTask1 extends AsyncTask<TextView , Void, String> {
-	public String msg = null;
+	public String msg = "null";
 	private Socket client=null;
 	private PrintWriter printwriter;
 	private InputStreamReader in;
@@ -210,7 +237,7 @@ class ClientConnectorTask1 extends AsyncTask<String, Void, Integer> {
 		 user = params[0];
 	     tweet = params[1];
 		try{
-		client = new Socket("194.210.230.95",4444);
+		client = new Socket("192.168.1.3",4444);
 		printwriter = new PrintWriter(client.getOutputStream(),true);
 		buf = new BufferedReader( new InputStreamReader(client.getInputStream()));
 		
@@ -218,31 +245,6 @@ class ClientConnectorTask1 extends AsyncTask<String, Void, Integer> {
         msg=buf.readLine();
         
         printwriter.close();
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         
         

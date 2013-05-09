@@ -35,7 +35,8 @@ import android.widget.ViewFlipper;
 
 public class TweetMenu extends Activity implements OnTouchListener{
 	
-	 float downXValue;
+	 public static final String SERVER_IP = "192.168.1.3";
+	float downXValue;
 	 private Button button;
 	 private Button buttonFacebook;
 	 private long leituras=0;	 
@@ -236,7 +237,7 @@ class ClientConnectorTask1 extends AsyncTask<String, Void, Integer> {
      // connect to the server and send the message
             try {
             	
-            		client = new Socket("192.168.1.3", 4444);
+            		client = new Socket(SERVER_IP, 4444);
                     printwriter = new PrintWriter(client.getOutputStream(),true);
                     printwriter.write(strings[0]);
                     printwriter.flush();
@@ -278,7 +279,8 @@ class ClientConnectorTask1 extends AsyncTask<String, Void, Integer> {
 		 user = params[0];
 	     tweet = params[1];
 		try{
-		client = new Socket("192.168.1.3",4444);
+			
+		client = new Socket(SERVER_IP,4444);
 		printwriter = new PrintWriter(client.getOutputStream(),true);
 		buf = new BufferedReader( new InputStreamReader(client.getInputStream()));
 		

@@ -16,12 +16,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.animation.AnimationUtils;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -44,9 +46,10 @@ public class TweetMenu extends Activity implements OnTouchListener{
 	 private String mensagem = "null";
 	 private Date data = new Date();
 	 private ArrayList<String> tweetsList = new ArrayList<String>();
+	 private ArrayList<Conversa> talks = new ArrayList<Conversa>();
 	 private ListView mainListView;
 	 private ArrayAdapter<String> listAdapter ;
-
+	 private String username ;
 	 
 
 	 
@@ -66,14 +69,48 @@ public class TweetMenu extends Activity implements OnTouchListener{
 		button = (Button) findViewById(R.id.button1);
 		buttonFacebook = (Button) findViewById(R.id.facebook);
 		Intent intent = getIntent();
+		username = intent.getStringExtra("username");
 		time= new Timer();
-		String username = intent.getStringExtra("username");
 		mainListView = (ListView) findViewById( R.id.listview );    
 		et.setText(username);
 	//	rowTextView
 		listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow, tweetsList); 
 		mainListView.setAdapter( listAdapter );
-		mainListView.setOnTouchListener((OnTouchListener) this);
+		//mainListView.setOnTouchListener((OnTouchListener) this);
+		mainListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+		
+		/*mainListView.setOnClickListener(new View.OnClickListener() {
+                  public void onClick(View v) {
+                	  int item = mainListView.getSelectedItemPosition();
+                	 // String username = intent.getStringExtra("username");
+                	  Conversa conv = talks.get(item);
+                	  Intent activityIntent = new Intent(TweetMenu.this, TweetDialog.class);
+	                    Bundle newActivityInfo = new Bundle();
+	                    newActivityInfo.putInt("index", item);
+	                    newActivityInfo.putSerializable("talk", conv);// putDouble, putString, etc.
+	                    newActivityInfo.putString("username", username);
+	                    activityIntent.putExtras(newActivityInfo);
+	                    
+	                    startActivity(activityIntent);
+                	  
+                  }
+		});*/
+		mainListView.setOnItemClickListener(new OnItemClickListener() {
+		    public void onItemClick(AdapterView<?> view, View view1, int pos, long arg3) {
+		        Intent in = new Intent(TweetMenu.this, TweetDialog.class);
+		        Bundle b = new Bundle();
+		       
+				Conversa getSelectedItemOfList = (Conversa) talks.get(pos);
+				b.putInt("index", pos);
+				b.putSerializable("talk", getSelectedItemOfList);
+				b.putString("username", username);
+		        in.putExtras(b);
+		        startActivity(in);
+		    }
+		});
+
+
+                  
 		//Temporizador para actualizar o cliente
 			time.schedule(new TimerTask() {
 				TextView tweet = (TextView) findViewById(R.id.tweet);	
@@ -83,11 +120,22 @@ public class TweetMenu extends Activity implements OnTouchListener{
 					// TODO Auto-generated method stub	
 				new ClientReceiverTask1().execute(et, tweet);
 			
-				//guardar data e tweet num array
-			//int day =data.getDay();
+			if(mensagem.contains("@reply")){
+				String[] str = mensagem.split("-");
+				// @reply-@username-index-msg
+				Conversa c = talks.remove(Integer.parseInt(str[2]));
+				c.addReply(str[3]);
+				talks.add(Integer.parseInt(str[2]), c);
+				mensagem="null";
+				
+			}else{
 				if(!(mensagem.equals("null") || mensagem.equals("no tweet!"))){
 				tweetsList.add(mensagem); 
+				Conversa conv = new Conversa(mensagem);
+				
+				talks.add(conv);
 				mensagem="null";
+				}
 				}
 				}}, 5000,5000);
 			
@@ -119,15 +167,8 @@ public class TweetMenu extends Activity implements OnTouchListener{
       });
 	
 	}
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event)
-	{
-	    if ((keyCode == KeyEvent.KEYCODE_BACK))
-	    {
-	        finish();
-	    }
-	    return super.onKeyDown(keyCode, event);
-	}
+
+	private OnItemClickListener listenerOflistView;
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

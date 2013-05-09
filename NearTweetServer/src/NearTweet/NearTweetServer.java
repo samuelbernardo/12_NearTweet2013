@@ -60,21 +60,30 @@ public class NearTweetServer {
 				System.out.println("Clients="+a.Username);
 				a.setNewTweet(s[2]);
 				Clients.add(a);
-				
-				
-					
+				}
+			}
+			if(message.contains("@Reply")){
+				//reply, index, for who, username, message
+				String[] s = message.split("-");
+				System.out.println("Reply received from user "+s[3]+" to "+s[2]+":"+s[4]);
+				int size=Clients.size();
+				System.out.println("Clients size="+size);
+					if(s[2].equals("@all")){
+					for(int i=0; i<size;i++){
+					Client a = Clients.remove(i);
+					System.out.println("Clients="+a.Username);
+					String[] str2 = s[1].split("@");
+					System.out.println(str2[0]+"      "+str2[1]);
+					a.setNewReply(s[4], str2[1]);
+					Clients.add(a);
+					}
 				}
 			}
 			
 			if(message.contains("@act")){
 			String[] s = message.split("-");
 			int aux=0;
-			/*for(int i = 0; i < UserNames.size(); i++ ){
-				if(UserNames.elementAt(i).equals(s[0])){
-					aux = i;
-					i = UserNames.size()+1;
-				}
-			}*/
+
 			System.out.println(s[0]+" "+s[1]+"\n");
 			if((aux = UserNames.indexOf(s[1]))==-1){
 				socC.close();
@@ -91,13 +100,20 @@ public class NearTweetServer {
 				
 				if(dout.checkError())System.out.println("Stream error!\n");
 				
-			}else{
-				dout.write("no tweet!");
-				dout.flush();
-		
-				if(dout.checkError())System.out.println("Stream error!\n");
-				System.out.println("No Tweet.\n");
-			
+			}else if(c.hasNewReply()){
+					String newReply = c.getNewReply();
+					String[] str = newReply.split("index:");
+					System.out.println("Send : @reply-@"+c.Username+"-"+str[1]+"-"+str[0]);
+					dout.write("@reply-@"+c.Username+"-"+str[1]+"-"+str[0]);
+					dout.flush();
+					
+					if(dout.checkError())System.out.println("Stream error!\n");
+					
+					
+				}else{
+					dout.write("no tweet!");
+					System.out.println("No Tweet.\n");
+					dout.flush();
 				}
 			dout.close();
 			Clients.add(c);

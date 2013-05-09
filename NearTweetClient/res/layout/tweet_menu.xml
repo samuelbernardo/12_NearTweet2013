@@ -57,8 +57,7 @@
 			        android:layout_alignLeft="@+id/button1"
 			        android:layout_below="@+id/button1"
 			        android:layout_marginTop="55dp"
-			        android:ems="10" 
-			        android:textIsSelectable="true"/>
+			        android:ems="10"/>
 
 			    <Button
 			        android:id="@+id/facebook"
@@ -83,7 +82,8 @@
 <!-- a lista tem que estar  -->
 	<ListView android:layout_width="fill_parent"   
       android:layout_height="fill_parent"   
-      android:id="@+id/listview">  
+      android:id="@+id/listview"
+      android:choiceMode="singleChoice">  
     </ListView>  
   
   	</RelativeLayout>

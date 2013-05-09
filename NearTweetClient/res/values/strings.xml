@@ -10,5 +10,6 @@
     <string name="menu">Near Tweet Menu</string>
     <string name="facebook">Facebook</string>
     <string name="title_activity_tweet_list_view">TweetListView</string>
+    <string name="title_activity_tweet_dialog">TweetDialog</string>
 
 </resources>

@@ -32,13 +32,17 @@
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-                ... 
+                ... 
                 <!-- "data" entry shown later; not used in this example -->
             </intent-filter>
         </activity>
         <activity
             android:name="com.example.neartweetclient.TweetListView"
             android:label="@string/title_activity_tweet_list_view" >
+        </activity>
+        <activity
+            android:name="com.example.neartweetclient.TweetDialog"
+            android:label="@string/title_activity_tweet_dialog" >
         </activity>
     </application>
 

@@ -14,6 +14,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,7 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class TweetDialog extends Activity {
-	 public static final String SERVER_IP = "192.168.1.3";
+	 public static final String SERVER_IP = "192.168.1.2";
 	private Button retweetButton;
 	private TextView reply;
 	private ListView listview1;
@@ -65,7 +67,25 @@ public class TweetDialog extends Activity {
                 
 			}
         });
-		
+   /* listview1.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+      	  Intent shareIntent = new Intent(Intent.ACTION_SEND);
+      	  shareIntent.setType("text/plain");
+      	  shareIntent.putExtra(Intent.EXTRA_TEXT, "URLyouWantToShare");
+      	  startActivity(Intent.createChooser(shareIntent, "Share..."));
+			}
+    });*/
+	
+	
+	listview1.setOnItemClickListener(new OnItemClickListener() {
+	    public void onItemClick(AdapterView<?> view, View view1, int pos, long arg3) {
+	    	String getSelectedItemOfList =  conversas.get(pos);
+	    	  Intent shareIntent = new Intent(Intent.ACTION_SEND);
+	      	  shareIntent.setType("text/plain");
+	      	  shareIntent.putExtra(Intent.EXTRA_TEXT, getSelectedItemOfList);
+	      	  startActivity(Intent.createChooser(shareIntent, "Share..."));
+	    }
+	});
 		 
 		 
 	}

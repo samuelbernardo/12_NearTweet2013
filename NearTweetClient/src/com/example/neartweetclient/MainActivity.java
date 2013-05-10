@@ -23,7 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class MainActivity extends Activity {
-	 public static final String SERVER_IP = "192.168.1.3";
+	 public static final String SERVER_IP = "192.168.1.2";
     private Button button;
     private String message;
     private EditText textField;

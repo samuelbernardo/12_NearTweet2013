@@ -29,6 +29,7 @@ public class NearTweetServer {
 			 
 		  Socket socC= soc.accept();
 		  System.out.println(socC.getSendBufferSize()+"\n");
+		  
 	
 		  InputStreamReader din = new InputStreamReader(socC.getInputStream());
 		BufferedReader bufr = new BufferedReader(din);
@@ -96,7 +97,7 @@ public class NearTweetServer {
 				String tweetmsg = c.getNewTweet();
 				System.out.println("Envia Tweet:"+tweetmsg+".\n");
 				//dout.println(c.getNewTweet());
-				dout.println(tweetmsg);
+				dout.println("@Tweet@"+tweetmsg);
 				
 				if(dout.checkError())System.out.println("Stream error!\n");
 				

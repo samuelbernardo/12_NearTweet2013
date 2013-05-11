@@ -1,4 +1,4 @@
-package NearTweet;
+package com.example.neartweetclient;
 
 public class Message {
 	String msgType;

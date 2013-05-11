@@ -1,0 +1,8 @@
+# SimpleChat experiment
+clear
+register A 127.0.0.1 9011
+register B 127.0.0.1 9021
+register C 127.0.0.1 9031
+move A (B,C)
+print neighbors
+commit
